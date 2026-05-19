@@ -12,14 +12,19 @@ jobs:
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
 
-    strategy:
+strategy:
       fail-fast: false
       matrix:
         config:
+          # Test conditions with the engine active
           - {os: ubuntu-latest,   r: 'release', with_mark: true}
           - {os: macos-latest,    r: 'release', with_mark: true}
           - {os: windows-latest,  r: 'release', with_mark: true}
-
+          
+          # Test conditions with the engine absent
+          - {os: ubuntu-latest,   r: 'release', with_mark: false}
+          - {os: macos-latest,    r: 'release', with_mark: false}
+          - {os: windows-latest,  r: 'release', with_mark: false}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -43,7 +48,7 @@ jobs:
       - name: Install Program MARK (macOS)
         if: runner.os == 'macOS' && matrix.config.with_mark == true
         run: |
-          # 1. Compile natively for the current architecture via Simon Bonner's Homebrew Tap
+          # 1. Compile natively via Simon Bonner's Homebrew Tap
           brew tap sjbonner/tap
           brew install mark-on-mac
           
@@ -56,8 +61,7 @@ jobs:
           fi
           sudo chmod +x /opt/mark-bin/mark
 
-          # 3. Permanently mount configurations directly inside the R base environment profile.
-          # This acts as the single source of truth for both background compilation tasks and actual package checking.
+          # 3. Mount configurations inside the R base environment profile
           R_HOME=$(R RHOME)
           echo "options(MarkPath = '/opt/mark-bin/')" | sudo tee -a "$R_HOME/etc/Rprofile.site"
           echo "Sys.setenv(DYLD_LIBRARY_PATH = '/opt/homebrew/lib:/usr/local/lib')" | sudo tee -a "$R_HOME/etc/Rprofile.site"
@@ -66,30 +70,20 @@ jobs:
         if: runner.os == 'Windows' && matrix.config.with_mark == true
         shell: pwsh
         run: |
-          # Download and unpack the raw 64-bit zip directly from Phidot's stable files directory
           Invoke-WebRequest -UserAgent "Mozilla/5.0" -Uri "http://www.phidot.org/software/mark/downloads/files/mark.64.zip" -OutFile "mark.64.zip"
           Expand-Archive -Path "mark.64.zip" -DestinationPath "mark_extracted"
-          
-          # Provision target folder space
           New-Item -ItemType Directory -Force -Path "C:\Program Files\MARK"
-          
-          # Use a recursive wildcard query to catch mark.exe regardless of intermediate unpacking subdirectories
           Get-ChildItem -Path "mark_extracted" -Filter "mark.exe" -Recurse | Move-Item -Destination "C:\Program Files\MARK\mark.exe" -Force
-          
-          # Inject cleanly into the standard environment execution path mapper
           echo "C:\Program Files\MARK" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       # --- STEP 2: Resolve System and Package Dependencies ---
 
       - name: Install R dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          working-directory: '.'
 
       # --- STEP 3: Execute R CMD Check Verification Pass ---
 
       - name: Check R Package
         uses: r-lib/actions/check-r-package@v2
-        with:
-          working-directory: '.'
           args: 'c("--no-manual", "--as-cran")'
+          
