@@ -31,9 +31,8 @@ jobs:
         uses: r-lib/actions/setup-r@v2
         with:
           r-version: ${{ matrix.config.r }}
-          use-public-rspm: true
 
-      # --- STEP 1: Provision Program MARK Conditionally Across Platforms ---
+      # --- STEP 1: Provision Program MARK ---
 
       - name: Install Program MARK (Linux)
         if: runner.os == 'Linux' && matrix.config.with_mark == true
@@ -49,42 +48,32 @@ jobs:
         run: |
           brew tap sjbonner/tap
           brew install mark-on-mac
-          
-          # Fix the Abort trap: 6 by finding where Homebrew installed gfortran and symlinking it 
-          # into a directory that macOS allows binaries to search.
-          FORT_LIB=$(find /opt/homebrew /usr/local -name "libgfortran.5.dylib" 2>/dev/null | head -n 1)
-          if [ -n "$FORT_LIB" ]; then
-            sudo ln -sf "$FORT_LIB" /usr/local/lib/libgfortran.5.dylib
-          fi
-
-          # Tell R exactly where the executable lives via Rprofile
-          R_HOME=$(R RHOME)
-          echo "options(MarkPath = '/opt/homebrew/bin/')" | sudo tee -a "$R_HOME/etc/Rprofile.site"
+          # Fix Mac dynamic library linker visibility globally
+          echo "DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib:/usr/local/lib" >> $GITHUB_ENV
 
       - name: Install Program MARK (Windows)
         if: runner.os == 'Windows' && matrix.config.with_mark == true
-        shell: pwsh
+        shell: bash
         run: |
-          # Using native PowerShell loops to avoid cmd/chkcmd dependency issues entirely
-          Invoke-WebRequest -UserAgent "Mozilla/5.0" -Uri "http://www.phidot.org/software/mark/downloads/files/mark.64.zip" -OutFile "mark.zip"
-          Expand-Archive -Path "mark.zip" -DestinationPath "mark_extracted" -Force
-          New-Item -ItemType Directory -Force -Path "C:\MARK"
-          Get-ChildItem -Path "mark_extracted" -Filter "mark.exe" -Recurse | Move-Item -Destination "C:\MARK\mark.exe" -Force
-          
-          # Write the path configuration cleanly to the global R profile
-          $RHome = Rscript -e "cat(R.home())"
-          Add-Content -Path "$RHome\etc\Rprofile.site" -Value "options(MarkPath = 'C:/MARK/')"
+          curl -A "Mozilla/5.0" -o /tmp/mark.zip http://www.phidot.org/software/mark/downloads/files/mark.64.zip
+          unzip /tmp/mark.zip -d /tmp/mark_ext
+          mkdir -p /c/MARK
+          mv /tmp/mark_ext/mark.exe /c/MARK/mark.exe
+          echo "C:\MARK" >> $GITHUB_PATH
 
-      # --- STEP 2: Resolve System and Package Dependencies ---
+      # --- STEP 2: Install Package Dependencies Using Base/Remotes ---
 
-      - name: Install R dependencies
-        uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          working-directory: '.'
+      - name: Install Dependencies
+        run: |
+          options(repos = c(CRAN = "https://cloud.r-project.org"))
+          if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")
+          remotes::install_deps(dependencies = TRUE)
+          if (!requireNamespace("rcmdcheck", quietly = TRUE)) install.packages("rcmdcheck")
+        shell: Rscript {0}
 
-      # --- STEP 3: Execute R CMD Check Verification Pass ---
+      # --- STEP 3: Pure R CMD Check (Bypasses Broken Actions Pathing) ---
 
-      - name: Check R Package
-        uses: r-lib/actions/check-r-package@v2
-        with:
-          working-directory: '.'
+      - name: Execute Package Check
+        run: |
+          rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning")
+        shell: Rscript {0}
