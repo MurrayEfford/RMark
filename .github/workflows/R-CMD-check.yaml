@@ -41,15 +41,17 @@ jobs:
           cd /tmp
           wget --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64)" http://www.phidot.org/software/mark/downloads/files/mark.64.zip
           unzip mark.64.zip
-          sudo mv mark64/mark64-v2 /usr/local/bin/mark
+          sudo mv mark.64/mark64-v2 /usr/local/bin/mark
           sudo chmod +x /usr/local/bin/mark
 
       - name: Install Program MARK (macOS)
         if: runner.os == 'macOS' && matrix.config.with_mark == true
         run: |
+          # 1. Install via Simon Bonner's Homebrew Tap
           brew tap sjbonner/tap
           brew install mark-on-mac
           
+          # 2. Isolate the binary into a dedicated folder
           sudo mkdir -p /opt/mark-bin
           if [ -f /opt/homebrew/bin/mark ]; then
             sudo ln -sf /opt/homebrew/bin/mark /opt/mark-bin/mark
@@ -58,10 +60,19 @@ jobs:
           fi
           sudo chmod +x /opt/mark-bin/mark
 
+          # 3. Locate the actual Homebrew libgfortran path on the runner
+          BREW_FORTRAN_DIR=$(dirname $(find /opt/homebrew /usr/local -name "libgfortran.5.dylib" 2>/dev/null | head -n 1))
+          
+          # 4. Permanently bake the Homebrew library path directly into the binary's RPATH.
+          # This completely bypasses macOS SIP environment variable stripping.
+          if [ -n "$BREW_FORTRAN_DIR" ]; then
+            sudo install_name_tool -add_rpath "$BREW_FORTRAN_DIR" /opt/mark-bin/mark || true
+          fi
+
+          # 5. Set the R option cleanly without needing dangerous environment variables
           R_HOME=$(R RHOME)
           echo "options(MarkPath = '/opt/mark-bin/')" | sudo tee -a "$R_HOME/etc/Rprofile.site"
-          echo "Sys.setenv(DYLD_LIBRARY_PATH = '/opt/homebrew/lib:/usr/local/lib')" | sudo tee -a "$R_HOME/etc/Rprofile.site"
-
+          
       - name: Install Program MARK (Windows)
         if: runner.os == 'Windows' && matrix.config.with_mark == true
         shell: pwsh
@@ -71,9 +82,10 @@ jobs:
           New-Item -ItemType Directory -Force -Path "C:\Program Files\MARK"
           Get-ChildItem -Path "mark_extracted" -Filter "mark.exe" -Recurse | Move-Item -Destination "C:\Program Files\MARK\mark.exe" -Force
           
-          # Corrected: Uses native Add-Content to avoid character encoding issues on GITHUB_PATH
-          Add-Content -Path $env:GITHUB_PATH -Value "C:\Program Files\MARK"
-
+          # Fixed: Using standard subshell output redirection to write a cleanly terminated 
+          # string record, preventing Path corruption for subsequent steps.
+          "C:\Program Files\MARK" >> $env:GITHUB_PATH
+          
       # --- STEP 2: Resolve System and Package Dependencies ---
 
       - name: Install R dependencies
