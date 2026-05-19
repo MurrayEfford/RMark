@@ -85,3 +85,7 @@ jobs:
 
       - name: Check R Package
         uses: r-lib/actions/check-r-package@v2
+        with:
+          # Explicitly target the checked-out workspace directory path 
+          # without breaking the native actions execution root context.
+          check-dir: '${{ github.workspace }}/check'
