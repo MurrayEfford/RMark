@@ -40,29 +40,36 @@ jobs:
           r-version: ${{ matrix.config.r }}
           use-public-rspm: true
 
-      # --- STEP 1: Provision Program MARK Conditionally Based on Matrix Flag --- 
-      # Tar-xzf/wget/curl with fake User-Agent to bypass 403 Forbidden
+# --- STEP 1: Provision Program MARK Conditionally Based on Matrix Flag ---
+      
       - name: Install Program MARK (Linux)
         if: runner.os == 'Linux' && matrix.config.with_mark == true
         run: |
-          wget --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64)" http://www.phidot.org/software/mark/downloads/files/mark.linux.zip
-          unzip mark.linux.zip
-          sudo mv mark /usr/local/bin/mark
+          # Download the grouped 64-bit Linux zip archive
+          wget --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64)" http://www.phidot.org/software/mark/rmark/linux/mark.64.zip
+          unzip mark.64.zip
+          
+          # Phidot packs multiple architectures in the archive (e.g., mark64-v2, mark64-v3).
+          # We select the highly-compatible mark64-v2 to ensure stability on standard runners.
+          sudo mv mark64-v2 /usr/local/bin/mark
           sudo chmod +x /usr/local/bin/mark
 
       - name: Install Program MARK (macOS)
         if: runner.os == 'macOS' && matrix.config.with_mark == true
         run: |
-          curl -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -O http://www.phidot.org/software/mark/downloads/files/mark.mac.tgz
-          tar -xvzf mark.mac.tgz
-          sudo mv mark /usr/local/bin/mark
+          # Download the macOS standalone zipped archive
+          curl -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -O http://www.phidot.org/software/mark/rmark/linux/mark.osx.zip
+          unzip mark.osx.zip
+          
+          # Extract and route the binary to local bin path
+          sudo mv mark.64.osx /usr/local/bin/mark
           sudo chmod +x /usr/local/bin/mark
 
       - name: Install Program MARK (Windows)
         if: runner.os == 'Windows' && matrix.config.with_mark == true
         shell: pwsh
         run: |
-          # In PowerShell, Invoke-WebRequest needs a specified UserAgent string
+          # Windows stable engine location
           Invoke-WebRequest -UserAgent "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -Uri "http://www.phidot.org/software/mark/downloads/files/mark.zip" -OutFile "mark.zip"
           Expand-Archive -Path "mark.zip" -DestinationPath "mark_extracted"
           New-Item -ItemType Directory -Force -Path "C:\Program Files\MARK"
