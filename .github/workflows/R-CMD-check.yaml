@@ -40,27 +40,27 @@ jobs:
           r-version: ${{ matrix.config.r }}
           use-public-rspm: true
 
-# --- STEP 1: Provision Program MARK Conditionally Based on Matrix Flag ---
+      # --- STEP 1: Provision Program MARK Conditionally Based on Matrix Flag ---
       
       - name: Install Program MARK (Linux)
         if: runner.os == 'Linux' && matrix.config.with_mark == true
         run: |
-          # Download the verified zip containing the 64-bit standalone ELF binaries
+          # Download the verified zip from the dedicated RMark-Linux directory
           wget --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64)" http://www.phidot.org/software/mark/rmark/linux/mark.64.zip
           unzip mark.64.zip
           
-          # Use the statically linked version so it doesn't break over system shared library versions
-          sudo mv mark64.static /usr/local/bin/mark
+          # GitHub standard runners fully support the optimized AVX2 instruction set used by v3
+          sudo mv mark64-v3 /usr/local/bin/mark
           sudo chmod +x /usr/local/bin/mark
 
       - name: Install Program MARK (macOS)
         if: runner.os == 'macOS' && matrix.config.with_mark == true
         run: |
-          # Download the verified macOS archive layout
+          # Download the verified Mac zip from the same layout directory
           curl -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -O http://www.phidot.org/software/mark/rmark/linux/mark.osx.zip
           unzip mark.osx.zip
           
-          # Route the native executable engine file to path
+          # Extract and route the native Mac engine file
           sudo mv mark.64.osx /usr/local/bin/mark
           sudo chmod +x /usr/local/bin/mark
 
@@ -68,7 +68,7 @@ jobs:
         if: runner.os == 'Windows' && matrix.config.with_mark == true
         shell: pwsh
         run: |
-          # Windows stable binary location
+          # Windows remains standard in the core download files directory
           Invoke-WebRequest -UserAgent "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -Uri "http://www.phidot.org/software/mark/downloads/files/mark.zip" -OutFile "mark.zip"
           Expand-Archive -Path "mark.zip" -DestinationPath "mark_extracted"
           New-Item -ItemType Directory -Force -Path "C:\Program Files\MARK"
