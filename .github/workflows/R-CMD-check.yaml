@@ -56,17 +56,14 @@ jobs:
       - name: Install Program MARK (macOS)
         if: runner.os == 'macOS' && matrix.config.with_mark == true
         run: |
-          # Install gfortran (provided by GCC) which MARK requires to compile and run
-          brew install gcc
+          # Fetch raw source code components directly from Phidot's source directory
+          curl -H "User-Agent: Mozilla/5.0" -O http://www.phidot.org/software/mark/rmark/linux/source/mark.f
+          curl -H "User-Agent: Mozilla/5.0" -O http://www.phidot.org/software/mark/rmark/linux/source/fastam.f
           
-          # Clone Simon Bonner's official source repository for Mac compilation
-          git clone https://github.com/sjbonner/mark-on-mac.git
-          cd mark-on-mac
-          
-          # Compile the engine natively on the runner's architecture using the local gfortran compiler
+          # Compile natively on the runner's architecture using the host gfortran
           gfortran -O3 -o mark mark.f fastam.f
           
-          # Move the freshly compiled binary to the execution path
+          # Move the freshly compiled binary to execution path
           sudo mv mark /usr/local/bin/mark
           sudo chmod +x /usr/local/bin/mark
 
@@ -74,13 +71,13 @@ jobs:
         if: runner.os == 'Windows' && matrix.config.with_mark == true
         shell: pwsh
         run: |
-          # Pull the active, stable AVX2 Windows setup installer directly from Phidot's root directory
-          Invoke-WebRequest -UserAgent "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -Uri "http://www.phidot.org/software/mark/downloads/setup-v3.exe" -OutFile "setup.exe"
+          # Pull the base setup execution wrapper from the core files path
+          Invoke-WebRequest -UserAgent "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -Uri "http://www.phidot.org/software/mark/downloads/files/setup.exe" -OutFile "setup.exe"
           
-          # Use pre-installed 7-Zip on the runner to extract the raw mark.exe without running the GUI wizard
+          # Extract the core engine binaries with 7z
           7z x setup.exe -omark_extracted
           
-          # Route the isolated engine to the mapped local system environment PATH
+          # Map to runtime PATH location
           New-Item -ItemType Directory -Force -Path "C:\Program Files\MARK"
           Get-ChildItem -Path "mark_extracted" -Filter "mark.exe" -Recurse | Move-Item -Destination "C:\Program Files\MARK\mark.exe" -Force
           echo "C:\Program Files\MARK" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
