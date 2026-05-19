@@ -56,26 +56,32 @@ jobs:
       - name: Install Program MARK (macOS)
         if: runner.os == 'macOS' && matrix.config.with_mark == true
         run: |
-          # Download and extract using your verified absolute URL
-          curl -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -O http://www.phidot.org/software/mark/downloads/files/mark.osx.zip
-          unzip mark.osx.zip
+          # Install gfortran (provided by GCC) which MARK requires to compile and run
+          brew install gcc
           
-          # Move the modern macOS binary (extracted directly in root) to the local path
-          sudo mv mark64.10.osx /usr/local/bin/mark
+          # Clone Simon Bonner's official source repository for Mac compilation
+          git clone https://github.com/sjbonner/mark-on-mac.git
+          cd mark-on-mac
+          
+          # Compile the engine natively on the runner's architecture using the local gfortran compiler
+          gfortran -O3 -o mark mark.f fastam.f
+          
+          # Move the freshly compiled binary to the execution path
+          sudo mv mark /usr/local/bin/mark
           sudo chmod +x /usr/local/bin/mark
 
       - name: Install Program MARK (Windows)
         if: runner.os == 'Windows' && matrix.config.with_mark == true
         shell: pwsh
         run: |
-          # Download the stable standalone Windows binary archive from the verified files index
-          Invoke-WebRequest -UserAgent "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -Uri "http://www.phidot.org/software/mark/downloads/files/mark.zip" -OutFile "mark.zip"
-          Expand-Archive -Path "mark.zip" -DestinationPath "mark_extracted"
+          # Pull the active, stable AVX2 Windows setup installer directly from Phidot's root directory
+          Invoke-WebRequest -UserAgent "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -Uri "http://www.phidot.org/software/mark/downloads/setup-v3.exe" -OutFile "setup.exe"
           
-          # Route the extracted mark.exe executable to the runner's PATH mapping environment
+          # Use pre-installed 7-Zip on the runner to extract the raw mark.exe without running the GUI wizard
+          7z x setup.exe -omark_extracted
+          
+          # Route the isolated engine to the mapped local system environment PATH
           New-Item -ItemType Directory -Force -Path "C:\Program Files\MARK"
-          
-          # Using a container wildcard move ensures it catches mark.exe regardless of internal folder structuring
           Get-ChildItem -Path "mark_extracted" -Filter "mark.exe" -Recurse | Move-Item -Destination "C:\Program Files\MARK\mark.exe" -Force
           echo "C:\Program Files\MARK" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           
