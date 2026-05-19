@@ -10,8 +10,8 @@ jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
 
-    # Dynamically labels your GitHub Actions run list to explicitly show MARK status
-    name: ${{ matrix.config.os }} (${{ matrix.config.r }}) - MARK: ${{ matrix.config.with_mark }}
+    # Fixed: Single quotes prevent the colon after 'MARK' from breaking the YAML parser
+    name: '${{ matrix.config.os }} (${{ matrix.config.r }}) - MARK: ${{ matrix.config.with_mark }}'
 
     strategy:
       fail-fast: false
