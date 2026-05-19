@@ -68,13 +68,15 @@ jobs:
         if: runner.os == 'Windows' && matrix.config.with_mark == true
         shell: pwsh
         run: |
-          # Download from the verified active Windows directory path
-          Invoke-WebRequest -UserAgent "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -Uri "http://www.phidot.org/software/mark/downloads/mark.zip" -OutFile "mark.zip"
+          # Download the stable standalone Windows binary archive from the verified files index
+          Invoke-WebRequest -UserAgent "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -Uri "http://www.phidot.org/software/mark/downloads/files/mark.zip" -OutFile "mark.zip"
           Expand-Archive -Path "mark.zip" -DestinationPath "mark_extracted"
           
-          # Handle the Windows directory routing and set up the system PATH
+          # Route the extracted mark.exe executable to the runner's PATH mapping environment
           New-Item -ItemType Directory -Force -Path "C:\Program Files\MARK"
-          Move-Item -Path "mark_extracted\mark.exe" -Destination "C:\Program Files\MARK\mark.exe" -Force
+          
+          # Using a container wildcard move ensures it catches mark.exe regardless of internal folder structuring
+          Get-ChildItem -Path "mark_extracted" -Filter "mark.exe" -Recurse | Move-Item -Destination "C:\Program Files\MARK\mark.exe" -Force
           echo "C:\Program Files\MARK" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           
       # --- STEP 2: Handle R Package Dependencies Located in the Subfolder ---
