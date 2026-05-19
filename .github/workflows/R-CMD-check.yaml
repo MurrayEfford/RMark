@@ -80,7 +80,12 @@ jobs:
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
-          subdirectory: 'RMark' # <--- Instructs action to find DESCRIPTION here
+          working-directory: 'RMark' # <--- Instructs action to find DESCRIPTION here
+        env:
+          # Bridge the Homebrew path into the system library variable
+          # This allows RMark to successfully find libgfortran during compilation
+          DYLD_LIBRARY_PATH: '/opt/homebrew/lib:/usr/local/lib'
+          LD_LIBRARY_PATH: '/usr/local/lib'
 
       # --- STEP 3: Execute R CMD Check Inside the Subfolder ---
       
