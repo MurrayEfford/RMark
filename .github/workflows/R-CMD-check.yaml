@@ -45,30 +45,31 @@ jobs:
       - name: Install Program MARK (Linux)
         if: runner.os == 'Linux' && matrix.config.with_mark == true
         run: |
-          # Download the verified 64-bit Linux compilation tarball from the primary server root
-          wget --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64)" http://www.phidot.org/software/mark/rmark/linux/mark64.tar.gz
-          tar -xvzf mark64.tar.gz
+          # Download using your verified absolute URL
+          wget --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64)" http://www.phidot.org/software/mark/downloads/files/mark.64.zip
+          unzip mark.64.zip
           
-          # Move the optimized static binary to the local path execution folder
-          sudo mv mark64.static /usr/local/bin/mark
+          # The archive contains multiple optimization variants (v2, v3, static, dynamic).
+          # We pull the highly compatible mark64-v2 flavor to ensure a safe execution baseline.
+          sudo mv mark64-v2 /usr/local/bin/mark
           sudo chmod +x /usr/local/bin/mark
 
       - name: Install Program MARK (macOS)
         if: runner.os == 'macOS' && matrix.config.with_mark == true
         run: |
-          # Use Simon Bonner's official tap framework directly via Homebrew
-          # This automatically resolves the path routing and links the correct gfortran/GCC libraries
-          brew tap sjbonner/tap
-          brew install mark-on-mac
+          # Download using your verified absolute URL
+          curl -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -O http://www.phidot.org/software/mark/downloads/files/mark.osx.zip
+          unzip mark.osx.zip
           
-          # Verify file mapping to standard path target
+          # Move the native OS X binary out of the zip root into the local path execution folder
+          sudo mv mark.64.osx /usr/local/bin/mark
           sudo chmod +x /usr/local/bin/mark
 
       - name: Install Program MARK (Windows)
         if: runner.os == 'Windows' && matrix.config.with_mark == true
         shell: pwsh
         run: |
-          # Windows remains stable on the primary download files bucket directory
+          # Windows stable binary extraction sequence
           Invoke-WebRequest -UserAgent "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -Uri "http://www.phidot.org/software/mark/downloads/files/mark.zip" -OutFile "mark.zip"
           Expand-Archive -Path "mark.zip" -DestinationPath "mark_extracted"
           New-Item -ItemType Directory -Force -Path "C:\Program Files\MARK"
