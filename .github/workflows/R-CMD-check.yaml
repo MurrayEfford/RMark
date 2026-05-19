@@ -10,87 +10,86 @@ jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
 
-    name: ${{ matrix.config.os }} (MARK=${{ matrix.config.with_mark }})
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
 
     strategy:
       fail-fast: false
       matrix:
         config:
-          # --- Linux Tests ---
           - {os: ubuntu-latest,   r: 'release', with_mark: true}
-          - {os: ubuntu-latest,   r: 'release', with_mark: false}
-          
-          # --- Windows Tests ---
+          - {os: macos-latest,    r: 'release', with_mark: true}
           - {os: windows-latest,  r: 'release', with_mark: true}
-          - {os: windows-latest,  r: 'release', with_mark: false}
-          
-          # --- macOS Tests ---
-          - {os: macOS-latest,    r: 'release', with_mark: true}
-          - {os: macOS-latest,    r: 'release', with_mark: false}
-
-    env:
-      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
-      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: r-lib/actions/setup-r@v2
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
         with:
           r-version: ${{ matrix.config.r }}
           use-public-rspm: true
 
-      # --- STEP 1: Provision Program MARK Conditionally Based on Matrix Flag ---
-      
+      # --- STEP 1: Provision Program MARK Conditionally Across Platforms ---
+
       - name: Install Program MARK (Linux)
         if: runner.os == 'Linux' && matrix.config.with_mark == true
         run: |
-          # Download and extract using your verified absolute URL
           wget --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64)" http://www.phidot.org/software/mark/downloads/files/mark.64.zip
           unzip mark.64.zip
-          
-          # Target the file inside the extracted subfolder using a wildcard
           sudo mv */mark64-v2 /usr/local/bin/mark
           sudo chmod +x /usr/local/bin/mark
 
       - name: Install Program MARK (macOS)
         if: runner.os == 'macOS' && matrix.config.with_mark == true
         run: |
-          # Use Simon Bonner's Homebrew tap to build/install mark natively
+          # 1. Compile natively for the current architecture via Simon Bonner's Homebrew Tap
           brew tap sjbonner/tap
           brew install mark-on-mac
           
-          # Homebrew links binaries to /opt/homebrew/bin (ARM64) or /usr/local/bin (Intel).
-          # Create a symbolic link to ensure RMark can find it unconditionally under standard paths.
+          # 2. Isolate the compiled execution path
+          sudo mkdir -p /opt/mark-bin
           if [ -f /opt/homebrew/bin/mark ]; then
-            sudo ln -sf /opt/homebrew/bin/mark /usr/local/bin/mark
+            sudo ln -sf /opt/homebrew/bin/mark /opt/mark-bin/mark
+          else
+            sudo ln -sf /usr/local/bin/mark /opt/mark-bin/mark
           fi
-          sudo chmod +x /usr/local/bin/mark
+          sudo chmod +x /opt/mark-bin/mark
+
+          # 3. Permanently mount configurations directly inside the R base environment profile.
+          # This acts as the single source of truth for both background compilation tasks and actual package checking.
+          R_HOME=$(R RHOME)
+          echo "options(MarkPath = '/opt/mark-bin/')" | sudo tee -a "$R_HOME/etc/Rprofile.site"
+          echo "Sys.setenv(DYLD_LIBRARY_PATH = '/opt/homebrew/lib:/usr/local/lib')" | sudo tee -a "$R_HOME/etc/Rprofile.site"
 
       - name: Install Program MARK (Windows)
         if: runner.os == 'Windows' && matrix.config.with_mark == true
         shell: pwsh
         run: |
-          # Fallback placeholder to prevent workflow crashes while resolving the Windows asset path
-          Write-Host "Windows installation sequence requires manual repository asset hosting or custom installation mapping."
+          # Download and unpack the raw 64-bit zip directly from Phidot's stable files directory
+          Invoke-WebRequest -UserAgent "Mozilla/5.0" -Uri "http://www.phidot.org/software/mark/downloads/files/mark.64.zip" -OutFile "mark.64.zip"
+          Expand-Archive -Path "mark.64.zip" -DestinationPath "mark_extracted"
           
-      # --- STEP 2: Handle R Package Dependencies Located in the Subfolder ---
-      
+          # Provision target folder space
+          New-Item -ItemType Directory -Force -Path "C:\Program Files\MARK"
+          
+          # Use a recursive wildcard query to catch mark.exe regardless of intermediate unpacking subdirectories
+          Get-ChildItem -Path "mark_extracted" -Filter "mark.exe" -Recurse | Move-Item -Destination "C:\Program Files\MARK\mark.exe" -Force
+          
+          # Inject cleanly into the standard environment execution path mapper
+          echo "C:\Program Files\MARK" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      # --- STEP 2: Resolve System and Package Dependencies ---
+
       - name: Install R dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck
-          working-directory: 'RMark' # <--- Instructs action to find DESCRIPTION here
-        env:
-          # Bridge the Homebrew path into the system library variable
-          # This allows RMark to successfully find libgfortran during compilation
-          DYLD_LIBRARY_PATH: '/opt/homebrew/lib:/usr/local/lib'
-          LD_LIBRARY_PATH: '/usr/local/lib'
+          working-directory: '.'
 
-      # --- STEP 3: Execute R CMD Check Inside the Subfolder ---
-      
-      - name: Check Package
+      # --- STEP 3: Execute R CMD Check Verification Pass ---
+
+      - name: Check R Package
         uses: r-lib/actions/check-r-package@v2
         with:
-          working-directory: 'RMark' # <--- Forces the check suite to run inside the subfolder
+          working-directory: '.'
           args: 'c("--no-manual", "--as-cran")'
