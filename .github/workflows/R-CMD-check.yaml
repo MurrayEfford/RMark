@@ -10,21 +10,21 @@ jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
 
-    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+    # Dynamically labels your GitHub Actions run list to explicitly show MARK status
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }}) - MARK: ${{ matrix.config.with_mark }}
 
     strategy:
       fail-fast: false
       matrix:
         config:
-          # Test conditions with the engine active
+          # Complete testing matrix across all environments and configurations
           - {os: ubuntu-latest,   r: 'release', with_mark: true}
-          - {os: macos-latest,    r: 'release', with_mark: true}
-          - {os: windows-latest,  r: 'release', with_mark: true}
-          
-          # Test conditions with the engine absent
           - {os: ubuntu-latest,   r: 'release', with_mark: false}
+          - {os: macos-latest,    r: 'release', with_mark: true}
           - {os: macos-latest,    r: 'release', with_mark: false}
+          - {os: windows-latest,  r: 'release', with_mark: true}
           - {os: windows-latest,  r: 'release', with_mark: false}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
