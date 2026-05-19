@@ -88,4 +88,4 @@ jobs:
         with:
           # Explicitly target the checked-out workspace directory path 
           # without breaking the native actions execution root context.
-          check-dir: '${{ github.workspace }}/check'
+          working-directory: '${{ github.workspace }}'
