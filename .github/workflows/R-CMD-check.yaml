@@ -85,5 +85,5 @@ jobs:
 
       - name: Check R Package
         uses: r-lib/actions/check-r-package@v2
-          args: 'c("--no-manual", "--as-cran")'
+        args: 'c("--no-manual", "--as-cran")'
           
