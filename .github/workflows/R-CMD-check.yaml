@@ -40,30 +40,27 @@ jobs:
           r-version: ${{ matrix.config.r }}
           use-public-rspm: true
 
-      # --- STEP 1: Provision Program MARK Conditionally Based on Matrix Flag ---
+# --- STEP 1: Provision Program MARK Conditionally Based on Matrix Flag ---
       
-      # Using a fake User-Agent to bypass server-side 403 blocks
       - name: Install Program MARK (Linux)
         if: runner.os == 'Linux' && matrix.config.with_mark == true
         run: |
-          # 1. Download the verified Linux archive (note: it's a .zip containing ELF binaries)
+          # Download the verified zip containing the 64-bit standalone ELF binaries
           wget --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64)" http://www.phidot.org/software/mark/rmark/linux/mark.64.zip
           unzip mark.64.zip
           
-          # 2. Extract and route the optimized 64-bit executable (v3 or v2 flavor)
-          # Phidot ships mark64-v3 (for modern CPUs) and mark64-v2 (older instruction sets).
-          # GitHub's standard ubuntu-latest runners support the AVX2 instructions used by v3.
-          sudo mv mark64-v3 /usr/local/bin/mark
+          # Use the statically linked version so it doesn't break over system shared library versions
+          sudo mv mark64.static /usr/local/bin/mark
           sudo chmod +x /usr/local/bin/mark
 
       - name: Install Program MARK (macOS)
         if: runner.os == 'macOS' && matrix.config.with_mark == true
         run: |
-          # 1. Download the verified macOS archive
+          # Download the verified macOS archive layout
           curl -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -O http://www.phidot.org/software/mark/rmark/linux/mark.osx.zip
           unzip mark.osx.zip
           
-          # 2. Extract the native Intel/Mac executable
+          # Route the native executable engine file to path
           sudo mv mark.64.osx /usr/local/bin/mark
           sudo chmod +x /usr/local/bin/mark
 
@@ -71,14 +68,12 @@ jobs:
         if: runner.os == 'Windows' && matrix.config.with_mark == true
         shell: pwsh
         run: |
-          # 1. Download the stable Windows build zip
+          # Windows stable binary location
           Invoke-WebRequest -UserAgent "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -Uri "http://www.phidot.org/software/mark/downloads/files/mark.zip" -OutFile "mark.zip"
           Expand-Archive -Path "mark.zip" -DestinationPath "mark_extracted"
-          
-          # 2. Route the .exe into system environment PATH
           New-Item -ItemType Directory -Force -Path "C:\Program Files\MARK"
           Move-Item -Path "mark_extracted\mark.exe" -Destination "C:\Program Files\MARK\mark.exe" -Force
-          echo "C:\Program Files\MARK" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append    
+          echo "C:\Program Files\MARK" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           
       # --- STEP 2: Handle R Package Dependencies Located in the Subfolder ---
       
