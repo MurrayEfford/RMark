@@ -60,17 +60,19 @@ jobs:
           curl -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -O http://www.phidot.org/software/mark/downloads/files/mark.osx.zip
           unzip mark.osx.zip
           
-          # Target the file inside the extracted subfolder using a wildcard
-          sudo mv */mark.64.osx /usr/local/bin/mark
+          # Move the modern macOS binary (extracted directly in root) to the local path
+          sudo mv mark64.10.osx /usr/local/bin/mark
           sudo chmod +x /usr/local/bin/mark
 
       - name: Install Program MARK (Windows)
         if: runner.os == 'Windows' && matrix.config.with_mark == true
         shell: pwsh
         run: |
-          # Windows stable binary extraction sequence
-          Invoke-WebRequest -UserAgent "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -Uri "http://www.phidot.org/software/mark/downloads/files/mark.zip" -OutFile "mark.zip"
+          # Download from the verified active Windows directory path
+          Invoke-WebRequest -UserAgent "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -Uri "http://www.phidot.org/software/mark/downloads/mark.zip" -OutFile "mark.zip"
           Expand-Archive -Path "mark.zip" -DestinationPath "mark_extracted"
+          
+          # Handle the Windows directory routing and set up the system PATH
           New-Item -ItemType Directory -Force -Path "C:\Program Files\MARK"
           Move-Item -Path "mark_extracted\mark.exe" -Destination "C:\Program Files\MARK\mark.exe" -Force
           echo "C:\Program Files\MARK" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
