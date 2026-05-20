@@ -1,0 +1,79 @@
+name: R-CMD-check
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  R-CMD-check:
+    runs-on: ${{ matrix.config.os }}
+
+    name: '${{ matrix.config.os }} (${{ matrix.config.r }}) - MARK: ${{ matrix.config.with_mark }}'
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {os: ubuntu-latest,   r: 'release', with_mark: false}
+          - {os: macos-latest,    r: 'release', with_mark: false}
+          - {os: windows-latest,  r: 'release', with_mark: false}
+          # - {os: ubuntu-latest,   r: 'release', with_mark: true}
+          # - {os: macos-latest,    r: 'release', with_mark: true}
+          # - {os: windows-latest,  r: 'release', with_mark: true}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: ${{ matrix.config.r }}
+
+      # --- STEP 1: Provision Program MARK ---
+
+      - name: Install Program MARK (Linux)
+        if: runner.os == 'Linux' && matrix.config.with_mark == true
+        run: |
+          cd /tmp
+          wget --user-agent="Mozilla/5.0" http://www.phidot.org/software/mark/downloads/files/mark.64.zip
+          unzip mark.64.zip
+          sudo mv mark.64/mark64-v2 /usr/local/bin/mark
+          sudo chmod +x /usr/local/bin/mark
+
+      - name: Install Program MARK (macOS)
+        if: runner.os == 'macOS' && matrix.config.with_mark == true
+        run: |
+          brew tap sjbonner/tap
+          brew install mark-on-mac
+          # Fix Mac dynamic library linker visibility globally
+          echo "DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib:/usr/local/lib" >> $GITHUB_ENV
+
+      - name: Install Program MARK (Windows)
+        if: runner.os == 'Windows' && matrix.config.with_mark == true
+        shell: bash
+        run: |
+          curl -A "Mozilla/5.0" -o /tmp/mark.zip http://www.phidot.org/software/mark/downloads/files/mark.64.zip
+          unzip /tmp/mark.zip -d /tmp/mark_ext
+          mkdir -p /c/MARK
+          mv /tmp/mark_ext/mark.exe /c/MARK/mark.exe
+          echo "C:\MARK" >> $GITHUB_PATH
+
+      # --- STEP 2: Install Package Dependencies Using Base/Remotes ---
+
+      - name: Install Dependencies
+        run: |
+          options(repos = c(CRAN = "https://cloud.r-project.org"))
+          if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")
+          remotes::install_deps(dependencies = TRUE)
+          if (!requireNamespace("rcmdcheck", quietly = TRUE)) install.packages("rcmdcheck")
+        shell: Rscript {0}
+
+      # --- STEP 3: Pure R CMD Check (Bypasses Broken Actions Pathing) ---
+
+      - name: Execute Package Check
+        run: |
+          rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning")
+          shell: Rscript {0}
