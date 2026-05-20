@@ -69,11 +69,11 @@ jobs:
           if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")
           remotes::install_deps(dependencies = TRUE)
           if (!requireNamespace("rcmdcheck", quietly = TRUE)) install.packages("rcmdcheck")
-        # shell: Rscript {0}
+        shell: Rscript {0}
 
       # --- STEP 3: Pure R CMD Check (Bypasses Broken Actions Pathing) ---
 
       - name: Execute Package Check
         run: |
           rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning")
-        # shell: Rscript {0}
+          shell: Rscript {0}
