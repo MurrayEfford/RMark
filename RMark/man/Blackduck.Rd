@@ -33,6 +33,7 @@ models.
 }
 \examples{
 
+\donttest{
 data(Blackduck)
 # Change BirdAge to numeric; starting with version 1.6.3 factor variables are
 # no longer allowed.  They can work as in this example but they can be misleading
@@ -83,7 +84,7 @@ return(bduck.results)
 bduck.results=run.Blackduck()
 bduck.results
 
-
+}
 
 }
 \keyword{datasets}

@@ -860,6 +860,7 @@ NULL
 #' @keywords datasets
 #' @examples
 #' 
+#' \donttest{
 #' data(Blackduck)
 #' # Change BirdAge to numeric; starting with version 1.6.3 factor variables are
 #' # no longer allowed.  They can work as in this example but they can be misleading
@@ -910,8 +911,9 @@ NULL
 #' bduck.results=run.Blackduck()
 #' bduck.results
 #' 
+#' }
 #' 
-#' 
+
 NULL
 
 #' White-tailed deer double observer spotlight capture-recapture analysis
