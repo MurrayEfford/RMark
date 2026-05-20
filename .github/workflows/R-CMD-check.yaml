@@ -31,14 +31,14 @@ jobs:
           use-public-rspm: true
 
       # --- STEP 1: Resolve Package Dependencies ---
-      # Explicitly points to the subfolder so 'pak' can discover your DESCRIPTION file
       - name: Install R dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           working-directory: 'RMark'
+          # Explicitly installs rcmdcheck alongside your package dependencies
+          extra-packages: any::rcmdcheck
 
       # --- STEP 2: Execute R CMD Check Verification Pass ---
-      # Tells rcmdcheck to look directly inside the subfolder context
       - name: Check R Package
         uses: r-lib/actions/check-r-package@v2
         with:
