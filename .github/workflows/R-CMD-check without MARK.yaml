@@ -2,9 +2,9 @@ name: R-CMD-check
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, simplified]
   pull_request:
-    branches: [main, master]
+    branches: [main, master, simplified]
 
 jobs:
   R-CMD-check:
