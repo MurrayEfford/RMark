@@ -85,7 +85,21 @@ function(model.list,silent=FALSE,run=TRUE,use.initial=FALSE,initial=NULL,...)
 #  returns a list of mark models
 #
 # -----------------------------------------------------------------------------------------------------------------------
-initiallist=NULL
+
+    # inserted 2026-05-24 MGE as advised by Gemini
+    # If the CRAN safety switch is active, skip execution and exit cleanly
+    if (isTRUE(getOption("RMark_dummy_mode"))) {
+        message("Skipping model execution: mark binary not found during R CMD check.")
+        
+        # Return a minimal, dummy object structure so downstream example 
+        # code (like print or summary) doesn't crash.
+        dummy_output <- list(title = "", results = "Dummy output for CRAN check")
+        class(dummy_output) <- "mark" 
+        return(list(dummy_output))
+    }
+    
+    
+    initiallist=NULL
 if(inherits(initial,"marklist"))
 	if(nrow(initial$model.table)!=nrow(model.list))
 		stop("marklist specified for initial argument does not contain same number of models")
