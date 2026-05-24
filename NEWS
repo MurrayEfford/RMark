@@ -4,7 +4,7 @@ CHANGE
 
 * .onLoad function sets option RMark_dummy_mode to flag MARK unavailable
 * run.mark.model() returns dummy output when Rmark_dummy_mode TRUE
-* additional print and summary methods for dumm output objects (extramethods.R)
+* additional print and summary methods for dummy output objects and lists thereof (extramethods.R)
 
 CHANGE
 
