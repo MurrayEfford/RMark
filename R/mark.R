@@ -223,6 +223,23 @@ allgroups=FALSE,strata.labels=NULL,counts=NULL,icvalues=NULL,wrap=TRUE,events=NU
 {
 # in 3.0.0 8/2022 - reverse no longer allowed because it requires deleting design data
   if(reverse) stop("reverse can no longer be set to TRUE. It required deleting design data which is no longer allowed.")
+
+    # inserted 2026-05-24 MGE as advised by Gemini
+    # If the CRAN safety switch is active, skip execution and exit cleanly
+    if (isTRUE(getOption("RMark_dummy_mode"))) {
+        message("Skipping live calculation for CRAN check.")
+        
+        # 1. Create a lightweight structure with a specific sub-class
+        dummy_output <- list(
+            title = "",
+            model = "",
+            results = list(AICc = 0, lnl = 0, npar = 0, chat = 1),
+            output = "Dummy run text"
+        )
+        class(dummy_output) <- c("mark_dummy", "mark")
+        return(dummy_output)
+    }
+    
 #
 #  If the data haven't been processed (data$data is NULL) do it now with specified or default arguments
 # 

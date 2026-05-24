@@ -3,7 +3,7 @@ RMark 3.0.7.1 (24 May 2026)
 CHANGE
 
 * .onLoad function sets option RMark_dummy_mode to flag MARK unavailable
-* run.mark.model() returns dummy output when Rmark_dummy_mode TRUE
+* run.mark.model() and mark() return dummy output when Rmark_dummy_mode TRUE
 * additional print and summary methods for dummy output objects and lists thereof (extramethods.R)
 
 CHANGE
