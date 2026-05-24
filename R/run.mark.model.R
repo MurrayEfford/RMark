@@ -127,7 +127,7 @@ delete=FALSE,external=FALSE,threads=-1,ignore.stderr=FALSE)
           results = list(AICc = 0, lnl = 0, npar = 0, chat = 1),
           output = "Dummy run text"
       )
-      class(dummy_output) <- c("mark_dummy", "mark")
+      class(dummy_output) <- c("markdummy", "mark")
       return(dummy_output)
   }
   

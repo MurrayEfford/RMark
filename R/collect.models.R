@@ -98,7 +98,7 @@ function(lx=NULL,type=NULL,table=TRUE,adjust=TRUE,external=FALSE)
             results = list(AICc = 0, lnl = 0, npar = 0, chat = 1),
             output = "Dummy run text"
         ))
-        class(dummy_output_list) <- c("mark_dummy_list", "mark_dummy", "mark")
+        class(dummy_output_list) <- c("markdummylist", "markdummy", "mark")
         return(dummy_output_list)
     }
     
