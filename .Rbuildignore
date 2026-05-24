@@ -2,4 +2,5 @@
 ^\.Rproj\.user$
 .build.timestamp
 ^\.github$
+^\Junk$
 README.md
