@@ -118,12 +118,15 @@ delete=FALSE,external=FALSE,threads=-1,ignore.stderr=FALSE)
   # inserted 2026-05-24 MGE as advised by Gemini
   # If the CRAN safety switch is active, skip execution and exit cleanly
   if (isTRUE(getOption("RMark_dummy_mode"))) {
-      message("Skipping model execution: mark binary not found during R CMD check.")
+      message("Skipping live calculation for CRAN check.")
       
-      # Return a minimal, dummy object structure so downstream example 
-      # code (like print or summary) doesn't crash.
-      dummy_output <- list(title = "", results = "Dummy output for CRAN check")
-      class(dummy_output) <- "mark" 
+      # 1. Create a lightweight structure with a specific sub-class
+      dummy_output <- list(
+          title = "",
+          results = list(AICc = 0, lnl = 0, npar = 0, chat = 1),
+          output = "Dummy run text"
+      )
+      class(dummy_output) <- c("mark_dummy", "mark")
       return(dummy_output)
   }
   

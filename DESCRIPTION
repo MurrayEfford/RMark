@@ -1,6 +1,6 @@
 Package: RMark
-Version: 3.0.7
-Date: 2026-01-28
+Version: 3.0.7.1
+Date: 2026-05-24
 Title: R Code for Mark Analysis
 Authors@R: c(person(given = "Jeff",
                         family = "Laake",
@@ -46,7 +46,7 @@ Authors@R: c(person(given = "Jeff",
 Description: An interface to the software package MARK that constructs input
     files for MARK and extracts the output. MARK was developed by Gary White
     and is freely available at <http://www.phidot.org/software/mark/downloads/>
-    but is not open source.
+    but is not open source. Test version modified by Murray Efford.
 SystemRequirements: notepad.exe, mark32.exe or mark64.exe on Windows and only mark on Linux (>= 11.2) (see README.txt in package directory)
 Depends:
     R (>= 2.13.0),
@@ -62,6 +62,6 @@ Suggests:
     plotrix
 LazyLoad: yes
 License: GPL (>=2)
-Maintainer: Jeff Laake <jefflaake@gmail.com>
+Maintainer: Murray Efford <murray.efford@otago.ac.nz>
 Encoding: UTF-8
 RoxygenNote: 7.3.3
