@@ -122,7 +122,7 @@ delete=FALSE,external=FALSE,threads=-1,ignore.stderr=FALSE)
       
       # Return a minimal, dummy object structure so downstream example 
       # code (like print or summary) doesn't crash.
-      dummy_output <- list(results = "Dummy output for CRAN check")
+      dummy_output <- list(title = "", results = "Dummy output for CRAN check")
       class(dummy_output) <- "mark" 
       return(dummy_output)
   }
