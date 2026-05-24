@@ -114,6 +114,19 @@ delete=FALSE,external=FALSE,threads=-1,ignore.stderr=FALSE)
 #
 # -----------------------------------------------------------------------------------------------------------------------
   os=R.Version()$os
+  
+  # inserted 2026-05-24 MGE as advised by Gemini
+  # If the CRAN safety switch is active, skip execution and exit cleanly
+  if (isTRUE(getOption("RMark_dummy_mode"))) {
+      message("Skipping model execution: mark binary not found during R CMD check.")
+      
+      # Return a minimal, dummy object structure so downstream example 
+      # code (like print or summary) doesn't crash.
+      dummy_output <- list(results = "Dummy output for CRAN check")
+      class(dummy_output) <- "mark" 
+      return(dummy_output)
+  }
+  
 #
 # Check to make sure model has not already been run
 #
