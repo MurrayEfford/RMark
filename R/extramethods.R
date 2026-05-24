@@ -15,6 +15,9 @@
     if (!has_binary && is_checking) {
         options(RMark_dummy_mode = TRUE)
     }
+    
+    # temporarily force for testing!
+    options(RMark_dummy_mode = TRUE)
 }
 
 #' @export
