@@ -123,6 +123,7 @@ delete=FALSE,external=FALSE,threads=-1,ignore.stderr=FALSE)
       # 1. Create a lightweight structure with a specific sub-class
       dummy_output <- list(
           title = "",
+          model = "",
           results = list(AICc = 0, lnl = 0, npar = 0, chat = 1),
           output = "Dummy run text"
       )
