@@ -140,6 +140,9 @@ were allowed to exclude some indices the result would be incorrect.
 \examples{
 pathtodata=paste(path.package("RMark"),"extdata",sep="/")
 \donttest{
+
+# do not compute example if MARK unavailable
+if (isFALSE(getOption("RMark_dummy_mode"))) {
 # This example is excluded from testing to reduce package check time
 #
 # indcov1.R
@@ -306,6 +309,7 @@ for (i in 1:7)
     xlab="Mass(kg)",ylab="Survival",ylim=c(0,1),main=paste("Time",i))
    lines(mass, x$lcl[x$par.index==i],lty=2)
    lines(mass, x$ucl[x$par.index==i],lty=2)
+}
 }
 }
 

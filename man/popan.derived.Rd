@@ -82,6 +82,7 @@ model.
 }
 \examples{
 \donttest{
+if (isFALSE(getOption("RMark_dummy_mode"))) {
 # This example is excluded from testing to reduce package check time
 # Example
 data(dipper)
@@ -111,6 +112,7 @@ return(collect.models() )
 }
 dipper.popan.results=run.dipper.popan()
 popan.derived(dipper.processed,dipper.popan.results)
+}
 }
 }
 \references{

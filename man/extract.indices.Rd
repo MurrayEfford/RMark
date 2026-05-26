@@ -100,6 +100,8 @@ the string.
 }
 \examples{
 \donttest{
+#' # do not compute example if MARK unavailable
+if (isFALSE(getOption("RMark_dummy_mode"))) {
 # This example is excluded from testing to reduce package check time
 # Example of computing N-hat for occasions 2 to 7 for the p=~time model
 data(dipper)
@@ -120,6 +122,7 @@ p.list=covariate.predictions(md,data=data.frame(index=p.indices))
 # separate estimate for each occasion
 pop.est(ns,p.list$estimates$estimate,
   design=diag(1,ncol=6,nrow=6),p.list$vcv)
+}
 }
 }
 \references{

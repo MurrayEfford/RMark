@@ -23,6 +23,7 @@ The point count data were set to missing when fewer than nine points were survey
 \examples{
 \donttest{
 
+if (isFALSE(getOption("RMark_dummy_mode"))) {
 # This example is excluded from testing to reduce package check time
 # Create dataframe
 data(LASP)
@@ -113,6 +114,7 @@ ceap <- covariate.predictions(Species.results,data=data.frame(ceap=ceap.values))
 #write.table(ceap$estimates,file="lasp_cov_pred_psi_ceap.csv",sep=",",col.names=TRUE,
 # row.names=FALSE)
 
+}
 }
 }
 \keyword{datasets}

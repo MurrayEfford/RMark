@@ -85,16 +85,20 @@ adjust.value <- function(field="n",value,model.list)
 # ----------------------------------------------------------------------------------------
 {
 #
-# If no model list specified, collect models from parent.frame; if
-# model.list is a list created by collect.models
-#
-if(!missing(model.list))
-{
-   if(inherits(model.list,"marklist"))
-   {
-      if(names(model.list)[length(model.list)]=="model.table")
-         model.list=model.list[1:(length(model.list)-1)]
-   }
+    # If no model list specified, collect models from parent.frame; if
+    # model.list is a list created by collect.models
+    #
+    # in case MARK unavailable
+    if (isTRUE(getOption("RMark_dummy_mode"))) return(NULL)
+    
+    if(!missing(model.list))
+    {
+        
+        if(inherits(model.list,"marklist"))
+        {
+            if(names(model.list)[length(model.list)]=="model.table")
+                model.list=model.list[1:(length(model.list)-1)]
+        }
 }
 else
 {

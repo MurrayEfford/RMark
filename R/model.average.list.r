@@ -68,6 +68,7 @@
 #' @keywords utility
 #' @examples
 #' \donttest{
+#' if (isFALSE(getOption("RMark_dummy_mode"))) {
 #' # This example is excluded from testing to reduce package check time
 #' # Create a set of models from dipper data
 #' data(dipper)
@@ -122,6 +123,7 @@
 #' print(mavg$estimates[Phi.indices,])
 #' print(mavg$vcv.real[Phi.indices,Phi.indices])
 #' }
+#' }
 #' 
 model.average.list=function(x,revised=TRUE, mata=FALSE, normal.lm=FALSE, residual.dfs=0, alpha=0.025,...)
 {
@@ -140,6 +142,9 @@ model.average.list=function(x,revised=TRUE, mata=FALSE, normal.lm=FALSE, residua
 #      se       - vector of std errors for model averaged estimates
 #      vcv      - var-cov matrix if vcv was given for each element of x
 #
+    # in case MARK unavailable
+    if (isTRUE(getOption("RMark_dummy_mode"))) return(NULL)
+    
   if(is.null(x$estimate)) stop("The list must contain an element named estimate")
   if(is.null(x$se)&is.null(x$vcv)) stop("The list must contain an element named se or vcv")
   if(is.null(x$AIC)&is.null(x$AICc)&is.null(x$QAIC)&is.null(x$QAICc)&is.null(x$weight))

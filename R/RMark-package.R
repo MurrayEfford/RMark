@@ -347,6 +347,8 @@ NULL
 #'table(ddl$Delta[,c("event")])
 #'
 #'
+#'# Proceed only if MARK available
+#'if (isFALSE(getOption("RMark_dummy_mode"))) {
 #'# Aim: run a HMM where uncertain events(=5) could be successful breeders or unsuccessful breeders
 #'
 #'Model.4 = mark(dp, ddl, model.parameters=list(S = Phi.ct,
@@ -362,6 +364,7 @@ NULL
 #'Psilist=get.real(Model.4,"Psi",vcv=TRUE)
 #'Psivalues=Psilist$estimates
 #'TransitionMatrix(Psivalues[Psivalues$time==1,],vcv.real=Psilist$vcv.real)
+#'}
 #'}
 NULL
 
@@ -496,6 +499,7 @@ NULL
 #'# estimated which is done by setting survival from 4A to 5A to 1 and
 #'# estimating survival from 5A to 6 which is then total survival from 4A to 6.
 #'\donttest{
+#'if (isFALSE(getOption("RMark_dummy_mode"))) {
 #'pathtodata=paste(path.package("RMark"),"extdata",sep="/")
 #'skagit=import.chdata(paste(pathtodata,"skagit.txt",sep="/"),field.types=c("f"),header=TRUE)
 #'skagit.processed=process.data(skagit,model="Multistrata",groups=c("tag"))
@@ -549,6 +553,7 @@ NULL
 #'# B
 #'prod(Sest[c(1,2,4,5,7)])
 #'#[1] 0.1154
+#' }
 #' }
 
 NULL
@@ -668,6 +673,8 @@ NULL
 #' @examples
 #' \donttest{
 #' 
+#'if (isFALSE(getOption("RMark_dummy_mode"))) {
+
 #' # This example is excluded from testing to reduce package check time
 #'# Create dataframe
 #'data(LASP)
@@ -758,6 +765,7 @@ NULL
 #'#write.table(ceap$estimates,file="lasp_cov_pred_psi_ceap.csv",sep=",",col.names=TRUE,
 #'# row.names=FALSE)
 #'
+#' }
 #' }
 
 NULL
@@ -1186,6 +1194,8 @@ NULL
 #' @keywords datasets
 #' @examples
 #' \donttest{
+#' if (isFALSE(getOption("RMark_dummy_mode"))) { 
+
 #' # This example is excluded from testing to reduce package check time
 #' data(dipper)
 #' dipper.model=mark(dipper,delete=TRUE)
@@ -1449,9 +1459,8 @@ NULL
 #'  mymodel=mark(dipper.proc,dipper.ddl,input.links=input.links,delete=TRUE)
 #'  summary(mymodel)
 #' }
+#' }
 NULL
-
-
 
 #' Exercise 7 example data
 #' 
@@ -1914,6 +1923,8 @@ NULL
 #'# data(mallard)
 
 #' \donttest{
+#'if (isFALSE(getOption("RMark_dummy_mode"))) {
+
 #' # This example is excluded from testing to reduce package check time
 #' # ggplot commands have been commented out so RMark doesn't require ggplot
 #' 
@@ -2100,6 +2111,7 @@ NULL
 #'# cleanup(ask = FALSE)
 #'
 #'
+#' }
 #' }
 NULL
 
@@ -2576,6 +2588,10 @@ NULL
 #' #
 #' return(collect.models())
 #' }
+#' 
+#' # do not compute example if MARK unavailable
+#' if (isFALSE(getOption("RMark_dummy_mode"))) {
+#' 
 #' # This runs the 6 models above-Note that if you use
 #' # invisible=FALSE in the above model calls
 #' # then the mark.exe prompt screen will show as each model is run.
@@ -2661,6 +2677,7 @@ NULL
 #'
 #' # For porting graphics directly to file, see pdf() or png(),
 #'
+#' }
 #' } 
 NULL
 
@@ -2948,6 +2965,7 @@ NULL
 #' #0000.	0	1	3	2	3	.
 #' #
 #' \donttest{
+#' if (isFALSE(getOption("RMark_dummy_mode"))) {
 #' # This example is excluded from testing to reduce package check time
 #' # retrieve weta data
 #' data(weta)
@@ -3006,6 +3024,7 @@ NULL
 #' sqrt(sum(prop.browse^2*diag(vcv.psi))+2*prod(prop.browse)*vcv.psi[1,2])
 #' 
 #' }
+#' }
 NULL
 
 #' White-winged dove Jolly-Seber POPAN Analysis Details
@@ -3060,6 +3079,7 @@ NULL
 #' @examples
 #' 
 #' \donttest{
+#' if (isFALSE(getOption("RMark_dummy_mode"))) {
 #' # This example is excluded from testing to reduce package check time
 #' # Starting with R version 4, examples wrapped in donttest are still run. Therefore,
 #' # I have commented out the model runs below because this example takes a lot of computing
@@ -3144,6 +3164,7 @@ NULL
 #' }
 #' wwdo.out=wwdo.popan()
 #' wwdo.out
+#' }
 #' }
 NULL
 

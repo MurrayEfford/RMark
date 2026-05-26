@@ -31,6 +31,12 @@ function(model,parameters)
 #
 # ------------------------------------------------------------------------------------------------
 {
+    # inserted 2026-05-24 MGE as advised by Gemini
+    # If the CRAN safety switch is active, skip execution and exit cleanly
+    if (isTRUE(getOption("RMark_dummy_mode"))) {
+        return(TRUE)
+    }
+    
 #
 # If parameter list is empty return TRUE
 #

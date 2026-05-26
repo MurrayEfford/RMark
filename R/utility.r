@@ -87,6 +87,9 @@
 #' and viability of a hunted population of polar bears. Arctic 58: 203-214.
 #' @examples
 #' \donttest{
+#' #' # do not compute example if MARK unavailable
+#' if (isFALSE(getOption("RMark_dummy_mode"))) {
+
 #' # This example is excluded from testing to reduce package check time
 #' # Example of computing N-hat for occasions 2 to 7 for the p=~time model
 #' data(dipper)
@@ -107,6 +110,7 @@
 #' # separate estimate for each occasion
 #' pop.est(ns,p.list$estimates$estimate,
 #'   design=diag(1,ncol=6,nrow=6),p.list$vcv)
+#' }
 #' }
 extract.indices=function(model,parameter=NULL,df=NULL)
 {

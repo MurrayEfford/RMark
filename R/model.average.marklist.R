@@ -74,6 +74,7 @@
 #' @keywords utility
 #' @examples
 #' \donttest{
+#' if (isFALSE(getOption("RMark_dummy_mode"))) {
 #' # This example is excluded from testing to reduce package check time
 #' data(dipper)
 #' run.dipper=function()
@@ -162,9 +163,13 @@
 #' # get model averaged estimates of first Phi(1) and first p(43) and v-c matrix
 #' model.average(dipper.results,vcv=TRUE,indices=c(1,43))  
 #' }
+#' }
 #' 
 model.average.marklist<- function(x,parameter=NULL,data=NULL,vcv=FALSE,drop=TRUE,indices=NULL,revised=TRUE,mata=FALSE, normal.lm=FALSE, residual.dfs=0, alpha=0.025,...)
 {
+    # in case MARK unavailable
+    if (isTRUE(getOption("RMark_dummy_mode"))) return(NULL)
+    
 #
 # Check validity of arguments and set up some variables
 #

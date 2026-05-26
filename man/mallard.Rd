@@ -65,6 +65,7 @@ than dummy variables.
 # The mallard data set is also incuded with RMark and can be retrieved with
 # data(mallard)
 \donttest{
+if (isFALSE(getOption("RMark_dummy_mode"))) {
 # This example is excluded from testing to reduce package check time
 # ggplot commands have been commented out so RMark doesn't require ggplot
 
@@ -251,6 +252,7 @@ AgePpn.survival
 # cleanup(ask = FALSE)
 
 
+}
 }
 }
 \author{

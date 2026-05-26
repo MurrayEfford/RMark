@@ -54,6 +54,7 @@ in the lines where I have listed \code{data(wwdo.09)} and \code{wwdo=wwdo.09}.  
 \examples{
 
 \donttest{
+if (isFALSE(getOption("RMark_dummy_mode"))) {
 # This example is excluded from testing to reduce package check time
 # Starting with R version 4, examples wrapped in donttest are still run. Therefore,
 # I have commented out the model runs below because this example takes a lot of computing
@@ -138,6 +139,7 @@ wwdo.ddl=make.design.data(wwdo.proc)
 }
 wwdo.out=wwdo.popan()
 wwdo.out
+}
 }
 }
 \references{

@@ -100,6 +100,7 @@ an_indiv_covariate) which will start with a 0 initial value.
 }
 \examples{
 \donttest{
+if (isFALSE(getOption("RMark_dummy_mode"))) {
 # example not run to reduce time required for checking
 do.MSOccupancy=function()
 {
@@ -130,6 +131,7 @@ do.MSOccupancy=function()
     cpus=2,parallel=TRUE,delete=TRUE))
 }
 xx=do.MSOccupancy()
+}
 }
 }
 \seealso{

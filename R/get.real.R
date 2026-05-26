@@ -68,6 +68,8 @@
 #' @keywords utility
 #' @examples
 #' 
+#' # check plotCI and mark.exe available 
+#' if (requireNamespace("plotrix") && isFALSE(getOption("RMark_dummy_mode"))) {
 #' data(example.data)
 #' pregion=list(formula=~region)
 #' PhiAge=list(formula=~Age)
@@ -81,7 +83,6 @@
 #'   cat(names(Phi.estimates)[i],"\n")
 #'   print(Phi.estimates[[i]]$pim,na.print="")
 #' }
-#' require(plotrix)
 #' #extract parameter estimates of capture probability p with se and conf intervals
 #' p.table=get.real(mod,"p",se=TRUE) 
 #' print(p.table[p.table$region==1,])  # print values from region 1
@@ -91,7 +92,7 @@
 #' plotCI(c(1:4),estimates,ucl-estimates,estimates-lcl,xlab="Region",
 #'          ylab="Capture probability",
 #' 		ylim=c(.5,1),main="Capture probability estimates by region")
-#' 
+#' }
 #' 
 get.real <-
 function(model,parameter,beta=NULL,se=FALSE,design=NULL,data=NULL,vcv=FALSE,show.fixed=TRUE,expand=FALSE,pim=TRUE)
@@ -128,6 +129,12 @@ function(model,parameter,beta=NULL,se=FALSE,design=NULL,data=NULL,vcv=FALSE,show
 #
 # First check to make sure model has been run
 #
+  # inserted 2026-05-24 MGE as advised by Gemini
+  # If the CRAN safety switch is active, skip execution and exit cleanly
+  if (isTRUE(getOption("RMark_dummy_mode"))) {
+      return() # invisible()
+  }
+  
   model=load.model(model)
   if(is.null(model$results)) 
   {

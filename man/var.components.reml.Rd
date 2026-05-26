@@ -57,6 +57,7 @@ illustration as to how this can be useful.
 }
 \examples{
 \donttest{
+if (isFALSE(getOption("RMark_dummy_mode"))) {
 # This example is excluded from testing to reduce package check time
 # Use dipper data with an age (0,1+)/time model for Phi
 data(dipper)
@@ -84,6 +85,7 @@ xx
 sqrt(xx$sigmasq)
 library(nlme)
 nlme::lme(estimate~-1+age,data=z,random=~1|time)
+}
 }
 }
 \author{

@@ -59,6 +59,9 @@ deltamethod.special=function(function.name,mean,cov,ses=TRUE)
 # This function handles the special cases of sum, cumsum, prod, cumprod.  It simply
 # constructs the necessary formula or list of formula and passes them onto deltamethod
 # and then returns the values.
+    
+  if (isTRUE(getOption("RMark_dummy_mode"))) return(NULL)
+    
   if(function.name=="prod")
      return(deltamethod(as.formula(paste("~",paste("x",1:length(mean),sep="",collapse="*"),sep="")),mean,cov,ses))
   if(function.name=="cumprod")

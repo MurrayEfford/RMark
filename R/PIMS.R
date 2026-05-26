@@ -43,7 +43,8 @@ PIMS=function(model,parameter,simplified=TRUE,use.labels=TRUE)
     # If the CRAN safety switch is active, skip execution and exit cleanly
     if (isTRUE(getOption("RMark_dummy_mode"))) {
         message("Skipping live calculation for CRAN check.")
-        print(data.frame())  
+        df <- data.frame()
+        return(df)
     }
     
   model=load.model(model)

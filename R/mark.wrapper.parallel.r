@@ -78,6 +78,8 @@
 #' @keywords utility
 #' @examples 
 #' \donttest{
+#'if (isFALSE(getOption("RMark_dummy_mode"))) {
+
 #' # example not run to reduce time required for checking
 #' do.MSOccupancy=function()
 #' {
@@ -108,6 +110,7 @@
 #'     cpus=2,parallel=TRUE,delete=TRUE))
 #' }
 #' xx=do.MSOccupancy()
+#' }
 #' }
 mark.wrapper.parallel<-
 		function(model.list,silent=FALSE,use.initial=FALSE,initial=NULL, parallel=TRUE, cpus=2, threads=1, ...)

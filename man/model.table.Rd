@@ -70,6 +70,7 @@ be called directly to construct the table.
 }
 \examples{
 \donttest{
+if (isFALSE(getOption("RMark_dummy_mode"))) {
 # This example is excluded from testing to reduce package check time
 data(dipper)
 run.dipper=function()
@@ -133,6 +134,7 @@ model.DeltaAICc.matrix=tapply(dipper.results$model.table$DeltaAICc,
 #
 # remove # to use next line
 #write.table(model.DeltaAICc.matrix,"DipperDeltaAICc.txt",sep="\t")
+}
 }
 }
 \seealso{

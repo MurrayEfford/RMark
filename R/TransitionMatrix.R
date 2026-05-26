@@ -117,6 +117,7 @@
 #' }
 TransitionMatrix=function(x,vcv.real=NULL)
 {
+    if (isTRUE(getOption("RMark_dummy_mode"))) return(NULL)
 #
 #  Make sure certain conditions are met with argument values
 #

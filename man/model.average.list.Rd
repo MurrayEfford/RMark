@@ -77,6 +77,7 @@ Anderson (2002) if if \code{revised=FALSE}; otherwise it uses eq 6.12.
 }
 \examples{
 \donttest{
+if (isFALSE(getOption("RMark_dummy_mode"))) {
 # This example is excluded from testing to reduce package check time
 # Create a set of models from dipper data
 data(dipper)
@@ -130,6 +131,7 @@ model.average(list(estimate=estimate,weight=weight,vcv=vcv))
 mavg=model.average(dipper.results,"Phi",vcv=TRUE)
 print(mavg$estimates[Phi.indices,])
 print(mavg$vcv.real[Phi.indices,Phi.indices])
+}
 }
 
 }

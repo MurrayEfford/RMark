@@ -112,6 +112,9 @@
 #' @examples
 #' pathtodata=paste(path.package("RMark"),"extdata",sep="/")
 #' \donttest{
+#' 
+#' # do not compute example if MARK unavailable
+#' if (isFALSE(getOption("RMark_dummy_mode"))) {
 #' # This example is excluded from testing to reduce package check time
 #' #
 #' # indcov1.R
@@ -280,6 +283,7 @@
 #'    lines(mass, x$ucl[x$par.index==i],lty=2)
 #' }
 #' }
+#' }
 #' 
 covariate.predictions <- function(model,data=NULL,indices=NULL,drop=TRUE, revised=TRUE, mata=FALSE, normal.lm=FALSE, residual.dfs=0, alpha=0.025,...)
 {
@@ -305,6 +309,8 @@ covariate.predictions <- function(model,data=NULL,indices=NULL,drop=TRUE, revise
 #   vcv              - variance-covariance matrix of real estimates
 #
 # ------------------------------------------------------------------------------------------------
+    if (isTRUE(getOption("RMark_dummy_mode"))) return(list(estimates=data.frame))
+    
    if(!inherits(model,"marklist"))
    {
      number.of.models=1

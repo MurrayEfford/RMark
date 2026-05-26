@@ -101,6 +101,8 @@ table(ddl$pi[,c("stratum")])
 table(ddl$Delta[,c("event")])
 
 
+# Proceed only if MARK available
+if (isFALSE(getOption("RMark_dummy_mode"))) {
 # Aim: run a HMM where uncertain events(=5) could be successful breeders or unsuccessful breeders
 
 Model.4 = mark(dp, ddl, model.parameters=list(S = Phi.ct,
@@ -116,6 +118,7 @@ summary(Model.4)
 Psilist=get.real(Model.4,"Psi",vcv=TRUE)
 Psivalues=Psilist$estimates
 TransitionMatrix(Psivalues[Psivalues$time==1,],vcv.real=Psilist$vcv.real)
+}
 }
 }
 \author{

@@ -43,6 +43,7 @@
 #' @seealso \code{\link{collect.model.names}}, \code{\link{collect.models}}
 #' @examples
 #' \donttest{
+#' if (isFALSE(getOption("RMark_dummy_mode"))) {
 #' # This example is excluded from testing to reduce package check time
 #' data(dipper)
 #' run.dipper=function()
@@ -106,6 +107,7 @@
 #' #
 #' # remove # to use next line
 #' #write.table(model.DeltaAICc.matrix,"DipperDeltaAICc.txt",sep="\t")
+#' }
 #' }
 model.table <-
 function(model.list=NULL,type=NULL,sort=TRUE,adjust=TRUE,ignore=TRUE,pf=1,

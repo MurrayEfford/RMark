@@ -38,6 +38,7 @@ pages 116-122 of MacKenzie et al. (2006).
 #0000.	0	1	3	2	3	.
 #
 \donttest{
+if (isFALSE(getOption("RMark_dummy_mode"))) {
 # This example is excluded from testing to reduce package check time
 # retrieve weta data
 data(weta)
@@ -95,6 +96,7 @@ sqrt( t(prop.browse) \%*\% vcv.psi \%*\% prop.browse )
 2*prod(prop.browse)*vcv.psi[1,2]
 sqrt(sum(prop.browse^2*diag(vcv.psi))+2*prod(prop.browse)*vcv.psi[1,2])
 
+}
 }
 }
 \references{

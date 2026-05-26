@@ -61,6 +61,7 @@ MARK with sex being used to describe groups and a numeric sex covariate.
 }
 \examples{
 \donttest{
+if (isFALSE(getOption("RMark_dummy_mode"))) { 
 # This example is excluded from testing to reduce package check time
 data(dipper)
 dipper.model=mark(dipper,delete=TRUE)
@@ -323,6 +324,7 @@ dipper.popan.results=run.dipper.popan()
 # Now these can be used with any call to mark
  mymodel=mark(dipper.proc,dipper.ddl,input.links=input.links,delete=TRUE)
  summary(mymodel)
+}
 }
 }
 \keyword{datasets}

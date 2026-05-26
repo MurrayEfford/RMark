@@ -87,6 +87,7 @@ v1.5.0 such that average covariate values are stored in each model object.
 }
 \examples{
 \donttest{
+if (isFALSE(getOption("RMark_dummy_mode"))) {
 # This example is excluded from testing to reduce package check time
 data(dipper)
 run.dipper=function()
@@ -174,6 +175,7 @@ model.average(dipper.results,"Phi",
 # a single model with find.covariates/fill.covariates.
 # get model averaged estimates of first Phi(1) and first p(43) and v-c matrix
 model.average(dipper.results,vcv=TRUE,indices=c(1,43))  
+}
 }
 
 }

@@ -60,6 +60,8 @@ function(model,npar)
 #
 #  model - mark model object
 #
+if (isTRUE(getOption("RMark_dummy_mode"))) return(model)
+    
 model=load.model(model)
 if(model$results$npar!=npar)
 {

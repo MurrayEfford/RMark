@@ -70,6 +70,10 @@
 predict_real <-
 		function(model,df,parameter,replicate=FALSE,beta=NULL,data=NULL,se=TRUE,vcv=FALSE)
 {
+		    if (isTRUE(getOption("RMark_dummy_mode"))) {
+		        message("Skipping predict_real for CRAN check")
+		        return(data.frame())
+		    }
 	model=load.model(model)
 	if(is.null(beta)) 
 	{

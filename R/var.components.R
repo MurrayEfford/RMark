@@ -44,6 +44,7 @@
 #' Statistics 29: 245-264.
 #' @examples
 #' \donttest{
+#' if (isFALSE(getOption("RMark_dummy_mode"))) {
 #' # This example is excluded from testing to reduce package check time
 #' data(dipper)
 #' md=mark(dipper,model.parameters=list(Phi=list(formula=~time)),delete=TRUE)
@@ -59,6 +60,7 @@
 #'   fixed=list(index=df$par.index,value=df$value))),adjust=FALSE,delete=TRUE)
 #' npar=md$results$npar+varc$GTrace
 #' md$results$lnl+2*(npar + (npar*(npar+1))/(md$results$n-npar-1))
+#' }
 #' }
 var.components=function (theta, design, vcv, alpha=0.05, upper=10*max(vcv), LAPACK = TRUE) 
 {

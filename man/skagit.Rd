@@ -33,6 +33,7 @@ An example of the Multistrata (multi-state) model in which states are routes tak
 # estimated which is done by setting survival from 4A to 5A to 1 and
 # estimating survival from 5A to 6 which is then total survival from 4A to 6.
 \donttest{
+if (isFALSE(getOption("RMark_dummy_mode"))) {
 pathtodata=paste(path.package("RMark"),"extdata",sep="/")
 skagit=import.chdata(paste(pathtodata,"skagit.txt",sep="/"),field.types=c("f"),header=TRUE)
 skagit.processed=process.data(skagit,model="Multistrata",groups=c("tag"))
@@ -86,6 +87,7 @@ prod(Sest[c(1:3,6)])
 # B
 prod(Sest[c(1,2,4,5,7)])
 #[1] 0.1154
+}
 }
 }
 \author{

@@ -232,6 +232,10 @@ invisible=TRUE,delete=TRUE)
 #
 return(collect.models())
 }
+
+# do not compute example if MARK unavailable
+if (isFALSE(getOption("RMark_dummy_mode"))) {
+
 # This runs the 6 models above-Note that if you use
 # invisible=FALSE in the above model calls
 # then the mark.exe prompt screen will show as each model is run.
@@ -317,6 +321,7 @@ lines(Psi.by.Area$estimates$covdata, Psi.by.Area$estimates$ucl, lty=2)
 
 # For porting graphics directly to file, see pdf() or png(),
 
+}
 } 
 }
 \author{

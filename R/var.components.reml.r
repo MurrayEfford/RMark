@@ -33,6 +33,7 @@
 #' @export
 #' @examples
 #' \donttest{
+#' if (isFALSE(getOption("RMark_dummy_mode"))) {
 #' # This example is excluded from testing to reduce package check time
 #' # Use dipper data with an age (0,1+)/time model for Phi
 #' data(dipper)
@@ -60,6 +61,7 @@
 #' sqrt(xx$sigmasq)
 #' library(nlme)
 #' nlme::lme(estimate~-1+age,data=z,random=~1|time)
+#' }
 #' }
 var.components.reml=function(theta,design,vcv=NULL,rdesign=NULL,initial=NULL,interval=c(-25,10),REML=TRUE)
 {

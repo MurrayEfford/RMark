@@ -96,6 +96,8 @@ contain a single entry to specify certain values for computation.
 }
 \examples{
 
+# check plotCI and mark.exe available 
+if (requireNamespace("plotrix") && isFALSE(getOption("RMark_dummy_mode"))) {
 data(example.data)
 pregion=list(formula=~region)
 PhiAge=list(formula=~Age)
@@ -109,7 +111,6 @@ for(i in 1:length(Phi.estimates))
   cat(names(Phi.estimates)[i],"\n")
   print(Phi.estimates[[i]]$pim,na.print="")
 }
-require(plotrix)
 #extract parameter estimates of capture probability p with se and conf intervals
 p.table=get.real(mod,"p",se=TRUE) 
 print(p.table[p.table$region==1,])  # print values from region 1
@@ -119,7 +120,7 @@ ucl=by(p.table$ucl,p.table$region,mean)
 plotCI(c(1:4),estimates,ucl-estimates,estimates-lcl,xlab="Region",
          ylab="Capture probability",
 		ylim=c(.5,1),main="Capture probability estimates by region")
-
+}
 
 }
 \seealso{
