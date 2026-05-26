@@ -17,12 +17,14 @@
 #' @keywords utility
 #' @examples
 #' \donttest{
+#' if (isFALSE(getOption("RMark_dummy_mode"))) {
 #' # This example is excluded from testing to reduce package check time
 #' data(dipper)
 #' dipper.processed=process.data(dipper,groups=("sex"))
 #' release.gof(dipper.processed)
 #' file.remove("release001.out")
 #' file.remove("mxxx.tmp")
+#' }
 #' }
 release.gof <-
   function(data,invisible=TRUE,title="Release-gof",view=FALSE)
