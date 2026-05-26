@@ -17,7 +17,7 @@
     }
     
     # temporarily force for testing!
-    options(RMark_dummy_mode = TRUE)
+    # options(RMark_dummy_mode = TRUE)
 }
 
 #' @export
